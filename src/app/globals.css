@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  --color-background: var(--bg);
+  --color-surface: var(--surface);
+  --color-surfaceHighlight: var(--surface-highlight);
+  --color-border: var(--border);
+
+  --color-primary: #6d28d9;
+  --color-primaryGlow: #8b5cf6;
+  --color-accent: #06b6d4;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+
+  --color-text-main: var(--text-main);
+  --color-text-muted: var(--text-muted);
+  --color-text-dim: var(--text-dim);
+
+  --shadow-neon: var(--shadow-neon);
+  --shadow-card: var(--shadow-card);
+}
+
+@layer base {
+  :root {
+    /* Light Mode Defaults */
+    --bg: #ffffff;
+    --surface: #f8fafc;
+    --surface-highlight: #e2e8f0;
+    --border: #e2e8f0;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --text-dim: #94a3b8;
+    --shadow-neon: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .dark {
+    /* Dark Mode Defaults */
+    --bg: #0a0a0c;
+    --surface: #121216;
+    --surface-highlight: #1e1e24;
+    --border: rgba(255, 255, 255, 0.08); /* White with low opacity */
+    --text-main: #f3f4f6;
+    --text-muted: #9ca3af;
+    --text-dim: #4b5563;
+    --shadow-neon: 0 0 15px rgba(139, 92, 246, 0.3);
+    --shadow-card: none;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text-main);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-card);
+  }
+  
+  .dark .glass-panel {
+    background: rgba(18, 18, 22, 0.7);
+    backdrop-filter: blur(12px);
+  }
+}
