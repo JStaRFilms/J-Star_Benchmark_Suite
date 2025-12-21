@@ -13,7 +13,15 @@
 **Coding Standards:**
 - **Strict TypeScript:** No `any`.
 - **Modular Architecture:** Separate `src/scripts` (Orchestrator) from `src/web` (Dashboard).
-- **Vibe Code:** The Dashboard must be visually stunning (Dark mode, neon accents).
+- **Vibe Code & Theming:**
+  - The Dashboard must support **Light & Dark modes** as defined in the design system.
+  - Use CSS variables (`var(--bg)`, `var(--text-main)`, etc.) for all colors.
+  - Default to Dark Mode, but ensure the toggle works using the `dark` class on the `html` element.
+
+**The "Mockup First" Law:**
+- The `/docs/mockups` folder is the **UNQUESTIONABLE source of truth** for all front-end UI/UX.
+- You must NOT deviate from the layout, color palette, typography, or component structure defined in the mockups.
+- Before implementing any page, open the corresponding mockup file and replicate it exactly.
 
 **Step-by-Step Instructions:**
 

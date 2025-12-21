@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J-Star Live Battle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    colors: {
+                        background: 'var(--bg)',
+                        surface: 'var(--surface)',
+                        surfaceHighlight: 'var(--surface-highlight)',
+                        border: 'var(--border)',
+                        primary: '#6d28d9', primaryGlow: '#8b5cf6', accent: '#06b6d4',
+                        success: '#10b981', warning: '#f59e0b', error: '#ef4444',
+                        text: { main: 'var(--text-main)', muted: 'var(--text-muted)', dim: 'var(--text-dim)' }
+                    },
+                    boxShadow: { 'neon': 'var(--shadow-neon)', 'card': 'var(--shadow-card)' }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --surface: #f8fafc;
+            --surface-highlight: #e2e8f0;
+            --border: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --text-dim: #94a3b8;
+            --shadow-neon: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .dark {
+            --bg: #0a0a0c;
+            --surface: #121216;
+            --surface-highlight: #1e1e24;
+            --border: rgba(255, 255, 255, 0.08);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --text-dim: #4b5563;
+            --shadow-neon: 0 0 15px rgba(139, 92, 246, 0.3);
+            --shadow-card: none;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .glass-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-card);
+        }
+
+        .dark .glass-panel {
+            background: rgba(18, 18, 22, 0.7);
+            backdrop-filter: blur(12px);
+        }
+
+        .nav-item.active {
+            background: rgba(139, 92, 246, 0.1);
+            border-left: 3px solid theme('colors.primary');
+            color: var(--text-main);
+        }
+
+        html:not(.dark) .nav-item.active {
+            background: #eff6ff;
+            color: theme('colors.primary');
+        }
+
+        .nav-item {
+            border-left: 3px solid transparent;
+        }
+    </style>
+</head>
+
+<body class="antialiased h-screen flex overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-surface border-r border-border flex flex-col z-20 transition-colors">
+        <div class="h-16 flex items-center px-6 border-b border-border">
+            <span class="text-xl font-bold tracking-tight text-text-main">J-Star <span
+                    class="text-primaryGlow">Bench</span></span>
+        </div>
+        <nav class="flex-1 py-6 space-y-1">
+            <a href="home.html"
+                class="nav-item flex items-center px-6 py-3 text-sm font-medium text-text-muted hover:text-text-main transition-colors">
+                <i data-lucide="layout-dashboard" class="w-4 h-4 mr-3"></i> Dashboard
+            </a>
+            <a href="run-details.html"
+                class="nav-item flex items-center px-6 py-3 text-sm font-medium text-text-muted hover:text-text-main transition-colors">
+                <i data-lucide="list" class="w-4 h-4 mr-3"></i> Runs
+            </a>
+            <a href="live-battle.html"
+                class="nav-item active flex items-center px-6 py-3 text-sm font-medium transition-colors">
+                <i data-lucide="swords" class="w-4 h-4 mr-3"></i> Live Battle
+            </a>
+            <a href="configuration.html"
+                class="nav-item flex items-center px-6 py-3 text-sm font-medium text-text-muted hover:text-text-main transition-colors">
+                <i data-lucide="settings" class="w-4 h-4 mr-3"></i> Configuration
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col relative overflow-hidden">
+
+        <!-- Header -->
+        <header
+            class="h-16 border-b border-border flex items-center justify-between px-8 z-10 bg-background/50 backdrop-blur-sm sticky top-0">
+            <h1 class="text-lg font-semibold text-text-main">Blind Test Arena</h1>
+            <div class="flex items-center space-x-4">
+                <button onclick="document.documentElement.classList.toggle('dark')"
+                    class="p-2 rounded-lg hover:bg-surfaceHighlight text-text-muted transition-colors">
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                </button>
+                <button
+                    class="flex items-center px-4 py-2 bg-accent/20 hover:bg-accent/30 text-accent text-sm font-medium rounded-lg border border-accent/20 transition-all">
+                    <i data-lucide="eye" class="w-4 h-4 mr-2"></i>
+                    Reveal Identities
+                </button>
+            </div>
+        </header>
+
+        <!-- Battle Ground -->
+        <div class="flex-1 overflow-y-auto p-4 z-10 grid grid-cols-2 gap-4">
+
+            <!-- Model A -->
+            <div class="flex flex-col h-full glass-panel rounded-xl border border-border overflow-hidden">
+                <!-- Header -->
+                <div class="p-4 bg-surfaceHighlight/30 border-b border-border flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="w-8 h-8 rounded-full bg-surfaceHighlight flex items-center justify-center font-bold text-text-muted">
+                            A</div>
+                        <span class="font-mono text-sm tracking-wider text-text-dim">??? 8B</span>
+                    </div>
+                    <span class="text-xs text-text-dim">145ms</span>
+                </div>
+
+                <!-- Output (Always Dark for Code) -->
+                <div class="flex-1 p-4 bg-[#0d0d10] overflow-auto font-mono text-sm text-gray-200">
+                    <span class="text-primary">function</span> calculateOrbit<span class="text-text-dim">()</span> {<br>
+                    &nbsp;&nbsp;<span class="text-accent">const</span> gravity = 9.8;<br>
+                    &nbsp;&nbsp;...<br>
+                    }
+                </div>
+
+                <!-- Rating Controls -->
+                <div class="p-6 border-t border-border bg-surface/50 space-y-4">
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <label class="text-xs font-medium text-text-muted uppercase">Logic</label>
+                            <span class="text-xs text-text-main">8/10</span>
+                        </div>
+                        <input type="range"
+                            class="w-full h-1 bg-surfaceHighlight rounded-lg appearance-none cursor-pointer accent-primary">
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <label class="text-xs font-medium text-text-muted uppercase">Vibe</label>
+                            <span class="text-xs text-text-main">5/10</span>
+                        </div>
+                        <input type="range"
+                            class="w-full h-1 bg-surfaceHighlight rounded-lg appearance-none cursor-pointer accent-accent">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model B -->
+            <div class="flex flex-col h-full glass-panel rounded-xl border border-border overflow-hidden">
+                <!-- Header -->
+                <div class="p-4 bg-surfaceHighlight/30 border-b border-border flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="w-8 h-8 rounded-full bg-surfaceHighlight flex items-center justify-center font-bold text-text-muted">
+                            B</div>
+                        <span class="font-mono text-sm tracking-wider text-text-dim">??? 70B</span>
+                    </div>
+                    <span class="text-xs text-text-dim">210ms</span>
+                </div>
+
+                <!-- Output -->
+                <div class="flex-1 p-4 bg-[#0d0d10] overflow-auto font-mono text-sm text-gray-200">
+                    <span class="text-primary">class</span> OrbitalPhysics {<br>
+                    &nbsp;&nbsp;<span class="text-accent">constructor</span>(mass) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-accent">this</span>.mass = mass;<br>
+                    &nbsp;&nbsp;}<br>
+                    }
+                </div>
+
+                <!-- Rating Controls -->
+                <div class="p-6 border-t border-border bg-surface/50 space-y-4">
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <label class="text-xs font-medium text-text-muted uppercase">Logic</label>
+                            <span class="text-xs text-text-main">9/10</span>
+                        </div>
+                        <input type="range"
+                            class="w-full h-1 bg-surfaceHighlight rounded-lg appearance-none cursor-pointer accent-primary">
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <label class="text-xs font-medium text-text-muted uppercase">Vibe</label>
+                            <span class="text-xs text-text-main">10/10</span>
+                        </div>
+                        <input type="range"
+                            class="w-full h-1 bg-surfaceHighlight rounded-lg appearance-none cursor-pointer accent-accent">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script> lucide.createIcons(); </script>
+</body>
+
+</html>
