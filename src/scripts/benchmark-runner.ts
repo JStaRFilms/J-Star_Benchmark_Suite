@@ -8,9 +8,13 @@ import fs from "fs/promises";
 import path from "path";
 import chalk from "chalk";
 import dotenv from "dotenv";
+import { promisify } from "util";
+import { exec } from "child_process";
 import { BENCHMARK_PROMPTS } from "../lib/prompts";
 import { calculateScore } from "../lib/scoring";
 import { BenchmarkResult, PromptResult } from "../lib/types";
+
+const execAsync = promisify(exec);
 
 // Load .env.local for Next.js compatibility
 dotenv.config({ path: ".env.local" });
@@ -29,10 +33,38 @@ const lmstudioProvider = createOpenAI({
 
 // Models to test - Format: "provider:modelId"
 const DEFAULT_MODELS = [
-    "ollama:llama3.2",
-    "groq:llama-3.1-70b-versatile",
-    "google:gemini-1.5-pro",
-    "openrouter:meta-llama/llama-3.1-405b",
+    // "ollama:llama3.2",
+    // "ollama:deepseek-coder:1.3b",
+    // "ollama:deepseek-r1:latest",
+    // "ollama:gemma2:2b",
+    // "ollama:llama3.1:8b",
+
+    // "lmstudio:phi-3.1-mini-128k-instruct",
+    // "lmstudio:llama-3.2-3b-instruct",
+    // "lmstudio:qwen3-4b-instruct-2507",
+    // "lmstudio:qwen3-4b-thinking-2507",
+    // "lmstudio:gemma-3-4b-it",
+    // "deepseek-r1-distill-qwen-7b",
+    // "lmstudio:qwen3-vl-8b-instruct",
+    // "lmstudio:openai/gpt-oss-20b",
+    // "lmstudio:nvidia/nemotron-3-nano",
+
+    "groq:openai/gpt-oss-120b",
+    "groq:moonshotai/kimi-k2-instruct-0905",
+    "groq:moonshotai/kimi-k2-instruct",
+    "groq:openai/gpt-oss-20b",
+    "groq:qwen/qwen3-32b",
+    "groq:meta-llama/llama-4-scout-17b-16e-instruct",
+    "groq:meta-llama/llama-4-maverick-17b-128e-instruct",
+    "groq:llama-3.3-70b-versatile",
+    "groq:llama-3.1-8b-instant",
+
+    // "google:gemini-1.5-pro",
+    // "google:gemini-1.5-flash",
+    // "google:gemini-2.0-pro",
+    // "google:gemini-2.0-flash",
+    // "google:gemini-2.5-pro",
+    // "google:gemini-2.5-flash",
 ];
 
 const MODELS_TO_TEST = process.env.TEST_MODELS
@@ -99,6 +131,42 @@ async function main() {
 
                 const evaluation = calculateScore(promptDef.id, text, duration);
 
+                let outputVideo: string | undefined = undefined;
+
+                // --- PHASE 6: VISUAL EXECUTION ---
+                if (promptDef.id === "ffmpeg_mosaic_narrative" && !evaluation.feedback.includes("Invalid syntax")) {
+                    try {
+                        // Extract command (remove markdown code blocks and clean)
+                        let command = text.replace(/```[a-z]*\n?/gi, "").replace(/```/g, "").trim();
+                        // Support multi-line commands with backslashes
+                        command = command.replace(/\\\n/g, " ");
+
+                        // Enforce our input and unique output
+                        const outputFilename = `${runId}_${modelStr.replace(/:/g, "_")}.mp4`;
+                        const outputPath = path.join(process.cwd(), "public", "outputs", outputFilename);
+
+                        // Basic security/correctness: Ensure it uses input.mp4 and outputs to the right location
+                        // We replace whatever output name the model chose with our unique path
+                        command = command.replace(/mosaic_output\.mp4/g, `"${outputPath}"`);
+                        // Ensure input path is relative to the cwd of the script
+                        command = command.replace(/input\.mp4/g, '"public/assets/input.mp4"');
+
+                        console.log(chalk.blue(`      🎬 Rendering video...`));
+                        console.log(chalk.gray(`      🔍 Command: ${command}`));
+                        await execAsync(command);
+
+                        if (await fs.stat(outputPath).catch(() => null)) {
+                            outputVideo = `/outputs/${outputFilename}`;
+                            console.log(chalk.green(`      ✅ Rendered: ${outputFilename}`));
+                        }
+                    } catch (error: any) {
+                        console.log(chalk.red(`      ❌ Render failed: ${error.message}`));
+                        if (error.stderr) {
+                            console.log(chalk.red(`      📜 Error detail: ${error.stderr.substring(0, 200)}...`));
+                        }
+                    }
+                }
+
                 modelPromptResults.push({
                     id: promptDef.id,
                     prompt: promptDef.prompt,
@@ -106,7 +174,8 @@ async function main() {
                     isError: false,
                     score: evaluation.score,
                     metrics: evaluation.metrics,
-                    feedback: evaluation.feedback
+                    feedback: evaluation.feedback,
+                    outputVideo
                 });
 
                 totalScore += evaluation.score;

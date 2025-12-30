@@ -20,6 +20,7 @@ export interface PromptResult {
         // Add other metrics as needed
     };
     feedback: string;
+    outputVideo?: string; // Path to rendered video if applicable
 }
 
 export interface RunSummary {
